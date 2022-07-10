@@ -7,6 +7,8 @@
  *
  */
 
+const { error } = require("console")
+
 const unzipper = require("unzipper"),
   fs = require("fs"),
   PNG = require("pngjs").PNG,
@@ -62,6 +64,9 @@ const readDir = (dir) => {
 const grayScale = (pathIn, pathOut) => {
   return new Promise((resolve, reject) => {
     fs.createReadStream(pathIn)
+      .on("error", (err) => {
+        reject(er.message)
+      })
       .pipe(
         new PNG({
           filterType: 4,
@@ -75,13 +80,14 @@ const grayScale = (pathIn, pathOut) => {
             this.data[idx] = this.data[idx]
             this.data[idx + 1] = this.data[idx]
             this.data[idx + 2] = this.data[idx]
-
-            // and reduce opacity
-            // this.data[idx + 3] = this.data[idx + 3] >> 1
           }
         }
 
         this.pack().pipe(fs.createWriteStream(pathOut))
+      })
+      .on("end", () => {
+        console.log("file has been grayscaled!")
+        resolve("done")
       })
   })
 }

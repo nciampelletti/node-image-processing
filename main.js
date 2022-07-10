@@ -7,13 +7,18 @@
  *
  */
 const { rejects } = require("assert")
+const fs = require("fs")
 const path = require("path")
 const { unzip, readDir, grayScale } = require("./IOhandler")
 
 const IOhandler = require("./IOhandler"),
   zipFilePath = path.join(__dirname, "myfile.zip"),
   pathUnzipped = path.join(__dirname, "unzipped"),
-  pathProcessed = path.join(__dirname, "grayscaledNew")
+  pathProcessed = path.join(__dirname, "grayscaled")
+
+if (!fs.existsSync(pathProcessed)) {
+  fs.mkdirSync(pathProcessed)
+}
 
 unzip(zipFilePath, pathUnzipped)
   .then((message) => {
@@ -26,7 +31,7 @@ unzip(zipFilePath, pathUnzipped)
       if (ext === ".png") {
         return grayScale(
           path.join(pathUnzipped, fileName),
-          fileName // path.join(pathProcessed, fileName)
+          path.join(pathProcessed, fileName)
         )
       }
     })
